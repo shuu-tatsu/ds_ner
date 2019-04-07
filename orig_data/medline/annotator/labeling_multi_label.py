@@ -128,7 +128,7 @@ if __name__ == '__main__':
         conllform_file = conllform_file_path + 'train_conllform.txt'
 
     elif args[1] == 'valid':
-        ne_sent_only = False
+        ne_sent_only = True
         id_file = id_file_path + 'id_valid.txt'
         id_anno_file = id_anno_file_path + 'anno_valid.txt'
         conllform_file = conllform_file_path + 'valid_conllform.txt'

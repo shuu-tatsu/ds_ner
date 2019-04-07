@@ -143,7 +143,7 @@ if __name__ == '__main__':
     #PROTEIN = '/cl/work/shusuke-t/BioIE/2019_03_05_keywords/protein.tsv'
     #GENE = '/cl/work/shusuke-t/BioIE/2019_03_05_keywords/gene.tsv'
     #GENE = '/cl/work/shusuke-t/BioIE/2019_03_05_keywords/gene_no_common_words.tsv'
-    CHEMICAL = '/cl/work/shusuke-t/ds_ner/orig_data/dic/data/ctd_meshsupp_vocab.txt'
+    CHEMICAL = '/cl/work/shusuke-t/ds_ner/orig_data/dic/data/set_ctd_meshsupp_vocab.txt'
     #ENZYME = '/cl/work/shusuke-t/BioIE/2019_03_05_keywords/enzyme.tsv'
     #dict_list = [(PROTEIN, 'protein'), (GENE, 'gene'), (ENZYME, 'enzyme')]
     #dict_list = [(PROTEIN, 'protein'), (GENE, 'gene')]
