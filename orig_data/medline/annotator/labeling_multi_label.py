@@ -117,9 +117,9 @@ def write_file(w, token_list):
 if __name__ == '__main__':
     args = sys.argv
 
-    id_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/medline/toy_data/id_data/'
-    id_anno_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/medline/toy_data/anno_data/'
-    conllform_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/medline/toy_data/conllform/'
+    id_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/medline/middle_data/id_data/'
+    id_anno_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/medline/middle_data/anno_data/'
+    conllform_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/medline/middle_data/conllform/'
 
     if args[1] == 'train':
         ne_sent_only = True
@@ -174,6 +174,3 @@ if __name__ == '__main__':
                 write_file(w, labeled_token_list)
     w.close()
 
-
-    #if args[1] == 'test':
-    #    split_sent.main()

@@ -138,7 +138,7 @@ def main(TARGET_FILE, dict_list):
 
 if __name__ == '__main__':
     #TARGET_FILE = '/cl/work/shusuke-t/BioIE/data/multi_label_corpus/manual/'
-    TARGET_FILE = '/cl/work/shusuke-t/ds_ner/orig_data/medline/toy_data/'
+    TARGET_FILE = '/cl/work/shusuke-t/ds_ner/orig_data/medline/middle_data/'
 
     #PROTEIN = '/cl/work/shusuke-t/BioIE/2019_03_05_keywords/protein.tsv'
     #GENE = '/cl/work/shusuke-t/BioIE/2019_03_05_keywords/gene.tsv'
