@@ -71,17 +71,15 @@ def main():
         TRAIN_FILE = TARGET_FILE + 'orig/training.abstracts.txt' 
         DEV_FILE = TARGET_FILE + 'orig/development.abstracts.txt'
         EVAL_FILE = TARGET_FILE + 'orig/evaluation.abstracts.txt'
-        id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'toy')
-        id_toy_creater.creat_file()
+        #id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'toy')
+        #id_toy_creater.creat_file()
 
-        '''
-        id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'train')
+        id_toy_creater = IdCreater(TARGET_FILE, TRAIN_FILE, 'train')
         id_toy_creater.creat_file()
-        id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'valid')
-        id_toy_creater.creat_file()
-        id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'test')
-        id_toy_creater.creat_file()
-        '''
+        id_valid_creater = IdCreater(TARGET_FILE, DEV_FILE, 'valid')
+        id_valid_creater.creat_file()
+        id_test_creater = IdCreater(TARGET_FILE, EVAL_FILE, 'test')
+        id_test_creater.creat_file()
 
 
     make_anno_corpus = True
@@ -90,9 +88,15 @@ def main():
         TRAIN_FILE = TARGET_FILE + 'orig/training.annotations.txt'
         DEV_FILE = TARGET_FILE + 'orig/development.annotations.txt'
         EVAL_FILE = TARGET_FILE + 'orig/evaluation.annotations.txt'
-        anno_toy_creater = AnnoCreater(TARGET_FILE, TOY_FILE, 'toy')
-        anno_toy_creater.creat_file()
+        #anno_toy_creater = AnnoCreater(TARGET_FILE, TOY_FILE, 'toy')
+        #anno_toy_creater.creat_file()
 
+        anno_train_creater = AnnoCreater(TARGET_FILE, TRAIN_FILE, 'train')
+        anno_train_creater.creat_file()
+        anno_valid_creater = AnnoCreater(TARGET_FILE, DEV_FILE, 'valid')
+        anno_valid_creater.creat_file()
+        anno_test_creater = AnnoCreater(TARGET_FILE, EVAL_FILE, 'test')
+        anno_test_creater.creat_file()
 
 if __name__ == '__main__':
     main()

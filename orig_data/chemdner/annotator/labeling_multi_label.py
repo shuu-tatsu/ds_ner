@@ -130,7 +130,7 @@ if __name__ == '__main__':
         conllform_file = conllform_file_path + 'toy_conllform.txt'
 
     elif args[1] == 'train':
-        ne_sent_only = True
+        ne_sent_only = False
         id_file = id_file_path + 'id_train.txt'
         id_anno_file = id_anno_file_path + 'anno_train.txt'
         conllform_file = conllform_file_path + 'train_conllform.txt'
