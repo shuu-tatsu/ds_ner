@@ -4,17 +4,38 @@ Context 辞書学習データ(train_conllform.txt)の作成
 Filtered dataのNEと辞書NEを入れ替える
 '''
 
+import random
+
 
 class Sentences():
 
     def __init__(self):
         self.sentences_list = [] # sentence class のlist
+        self.bie_sentences_list = [] # sentence class のlist
+        self.s_sentences_list = [] # sentence class のlist
 
     def append(self, sent):
-        self.sentences_list.append(sent)
+        # NEがセンテンス中に1つの場合のみappend
+        if sent.num_ne == 1:
+            self.sentences_list.append(sent)
+            if sent.ne_tag_type == 'B':
+                self.bie_sentences_list.append(sent)
+            elif sent.ne_tag_type == 'S':
+                self.s_sentences_list.append(sent)
 
-    def show(self):
-        print(self.sentences_list)
+    def get_sentences_list(self, label_type):
+        if label_type == 'bie':
+            return self.bie_sentences_list
+        elif label_type == 's':
+            return self.s_sentences_list
+
+    def get_one_sentence_context(self, label_type):
+        if label_type == 'bie':
+            sent_list = self.bie_sentences_list
+        elif label_type == 's':
+            sent_list = self.s_sentences_list
+        one_sent = random.choice(sent_list) 
+        return one_sent.front_context, one_sent.back_context
 
 
 class Sentence():
@@ -106,6 +127,16 @@ def get_instance(sent_list):
     return sentences
 
 
+def merge_ne_context(filtered_sentences, dic_sentences, label_type):
+    all_sent_merged_list = []
+    for sentence in dic_sentences.get_sentences_list(label_type):
+        one_ne_list = sentence.token_list
+        front_context_list, back_context_list = filtered_sentences.get_one_sentence_context(label_type)
+        one_sent_merged_list = front_context_list + one_ne_list + back_context_list
+        all_sent_merged_list.append(one_sent_merged_list)
+    return all_sent_merged_list
+
+
 def creating(orig_train_file, filtered_file, dic_file, write_file):
     # 辞書とFilteredNEの入れ替え
     splitter = Splitter()
@@ -115,20 +146,33 @@ def creating(orig_train_file, filtered_file, dic_file, write_file):
     filtered_sentences = get_instance(filtered_sent_list)
     dic_sentences = get_instance(dic_sent_list)
 
+    bie_merged  = merge_ne_context(filtered_sentences, dic_sentences, 'bie')
+    s_merged  = merge_ne_context(filtered_sentences, dic_sentences, 's')
 
     # orig_trainとランダムソートしてからマージ
+    orig_train_sent_list = splitter.split(orig_train_file)
+
+    all_merged_list = bie_merged + s_merged + orig_train_sent_list
+    random.shuffle(all_merged_list)
 
     # ファイルへ書き込み
+    with open(write_file, 'w') as w:
+        for sent in all_merged_list:
+            for word in sent:
+                w.write(word)
+                w.write('\n')
+            w.write('\n')
 
 
 def main():
     # data
     root_dir = '/cl/work/shusuke-t/ds_ner/dic_learning/context'
     orig_train_file = root_dir + '/conllform/non_dic_learning_train_conllform.txt'
-    #filtered_file = root_dir + '/filtered_conllform/filtered_all_conllform.txt'
-    filtered_file = root_dir + '/filtered_conllform/toy_filtered_all_conllform.txt'
-    #dic_file = '/cl/work/shusuke-t/ds_ner/dic_learning/context/dic_conllform/conllform/train_conllform.txt'
-    dic_file = '/cl/work/shusuke-t/ds_ner/dic_learning/context/dic_conllform/conllform/toy_train_conllform.txt'
+    #orig_train_file = root_dir + '/conllform/toy_non_dic_learning_train_conllform.txt'
+    filtered_file = root_dir + '/filtered_conllform/filtered_all_conllform.txt'
+    #filtered_file = root_dir + '/filtered_conllform/toy_filtered_all_conllform.txt'
+    dic_file = '/cl/work/shusuke-t/ds_ner/dic_learning/context/dic_conllform/conllform/train_conllform.txt'
+    #dic_file = '/cl/work/shusuke-t/ds_ner/dic_learning/context/dic_conllform/conllform/toy_train_conllform.txt'
     write_file = root_dir + '/conllform/train_conllform.txt'
 
     # creating
