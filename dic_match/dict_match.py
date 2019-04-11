@@ -42,6 +42,35 @@ class Metric():
                 cnt_correct += 1
         self.recall_score = cnt_correct / len(correct_abst_list)
 
+    def type_recall(self):
+        self.type_recall_score_list = []
+        self.type_list = ['SYSTEMATIC','FAMILY', 'TRIVIAL', 'FORMULA', 'ABBREVIATION', 'IDENTIFIER', 'MULTIPLE', 'NO CLASS']
+        for label_type in self.type_list:
+            correct_abst_list = [line for line in self.correct_list if line[1] == 'A' and line[5].strip() == label_type]
+            type_recall_score = self.culc_recall(correct_abst_list)
+            self.type_recall_score_list.append(type_recall_score)
+
+    def culc_recall(self, correct_abst_list):
+        cnt_correct = 0
+        for abst in correct_abst_list:
+            no_abst = abst[0]
+            correct_span = abst[2:4]
+            for span in self.predict_list:
+                if span[0] == no_abst:
+                    predict_span_list = span[1]
+                    break
+                else:
+                    predict_span_list = []
+            #correct_listの内、何割がpredict_span_listに存在するか
+            exist = [pred_span for pred_span in predict_span_list if int(correct_span[0]) == pred_span[1] and int(correct_span[1]) == pred_span[2]]
+            if len(exist) > 0:
+                cnt_correct += 1
+        recall_score = cnt_correct / len(correct_abst_list)
+        print(cnt_correct)
+        print(len(correct_abst_list))
+        print('')
+        return recall_score
+
     def f1(self):
         self.f1_score = 2 * self.precision_score * self.recall_score / (self.precision_score + self.recall_score)
 
@@ -72,14 +101,17 @@ def evaluate(extracted_words_list, ANNOTATIONS_FILE):
     metric.precision()
     metric.recall()
     metric.f1()
-    return metric.precision_score, metric.recall_score, metric.f1_score
+    metric.type_recall()
+    return metric.precision_score, metric.recall_score, metric.f1_score, metric.type_recall_score_list, metric.type_list
 
 
 def main(TEST_FILE, DICT_FILE, ANNOTATIONS_FILE):
     keyword_processor = make_ne_founder(DICT_FILE)
-    extracted_words_list = extract_keywords(TEST_FILE, keyword_processor) 
-    precision, recall, f1 = evaluate(extracted_words_list, ANNOTATIONS_FILE)
+    extracted_words_list = extract_keywords(TEST_FILE, keyword_processor)
+    precision, recall, f1, type_recall_list, type_list = evaluate(extracted_words_list, ANNOTATIONS_FILE)
     print('Precision:{} Recall:{} Span-F1:{}'.format(precision, recall, f1))
+    for i, type_label in enumerate(type_list):
+        print('{}: {}'.format(type_label, type_recall_list[i]))
 
 
 if __name__ == '__main__':
