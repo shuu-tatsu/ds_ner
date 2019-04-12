@@ -421,7 +421,8 @@ class FuzzyTagger(SequenceTagger):
             tags, _ = pad_tensors(tags)
 
             forward_score = self._forward_alg(features, lengths)
-            gold_score = self._score_sentence(features, tags, lengths)
+            gold_score = self._fuzzy_forward_alg(features, tags, lengths)
+            #gold_score = self._score_sentence(features, tags, lengths) #411
 
             score = forward_score - gold_score
 
@@ -529,7 +530,7 @@ class FuzzyTagger(SequenceTagger):
             tag_var = tag_var - \
                       max_tag_var[:, :, None].repeat(1, 1, transitions.shape[2])
 
-            agg_ = torch.log(torch.sum(torch.exp(tag_var), dim=2))
+            agg_ = torch.log(torch.sum(torch.exp(tag_var), dim=2)) # 519
 
             cloned = forward_var.clone()
             cloned[:, i + 1, :] = max_tag_var + agg_
@@ -542,7 +543,56 @@ class FuzzyTagger(SequenceTagger):
                        self.transitions[self.tag_dictionary.get_idx_for_item(STOP_TAG)][None, :].repeat(
                            forward_var.shape[0], 1)
 
-        alpha = log_sum_exp_batch(terminal_var)
+        alpha = log_sum_exp_batch(terminal_var) #532
+
+        return alpha
+
+    def _fuzzy_forward_alg(self, feats, tags, lens_):
+
+        init_alphas = torch.FloatTensor(self.tagset_size).fill_(-10000.)
+        init_alphas[self.tag_dictionary.get_idx_for_item(START_TAG)] = 0.
+
+        forward_var = torch.zeros(
+            feats.shape[0],
+            feats.shape[1] + 1,
+            feats.shape[2],
+            dtype=torch.float, device=flair.device)
+
+        forward_var[:, 0, :] = init_alphas[None, :].repeat(feats.shape[0], 1)
+
+        transitions = self.transitions.view(
+            1,
+            self.transitions.shape[0],
+            self.transitions.shape[1],
+        ).repeat(feats.shape[0], 1, 1)
+
+        for i in range(feats.shape[1]):
+            emit_score = feats[:, i, :]
+
+            tag_var = \
+                emit_score[:, :, None].repeat(1, 1, transitions.shape[2]) + \
+                transitions + \
+                forward_var[:, i, :][:, :, None].repeat(1, 1, transitions.shape[2]).transpose(2, 1)
+
+            max_tag_var, _ = torch.max(tag_var, dim=2)
+
+            tag_var = tag_var - \
+                      max_tag_var[:, :, None].repeat(1, 1, transitions.shape[2])
+
+            agg_ = torch.log(torch.sum(torch.exp(tag_var), dim=2)) # 519
+
+            cloned = forward_var.clone()
+            cloned[:, i + 1, :] = max_tag_var + agg_
+
+            forward_var = cloned
+
+        forward_var = forward_var[range(forward_var.shape[0]), lens_, :]
+
+        terminal_var = forward_var + \
+                       self.transitions[self.tag_dictionary.get_idx_for_item(STOP_TAG)][None, :].repeat(
+                           forward_var.shape[0], 1)
+
+        alpha = log_sum_exp_batch(terminal_var) #532
 
         return alpha
 
