@@ -38,7 +38,8 @@ class UnkTagger(SequenceTagger):
                  pickle_module
                  )
 
-        self.e = (0.1)**40
+        #self.e = (0.1)**40
+        self.e = 1. / np.finfo(np.float32).max
         self.unk_tag = self.tag_dictionary.get_idx_for_item(UNK_TAG)
         mask = self.get_trans_mask()
         self.valid_trans = torch.tensor(mask,
@@ -92,6 +93,7 @@ class UnkTagger(SequenceTagger):
               for i in range(feats.shape[1])], dim=0)
               for it in torch.unbind(forward_tags, dim=0)], dim=0)
 
+        '''
         #for debug
         for i in range(3):
             print('\n{}th tags[0] {}:{} -> {}:{}'.format(
@@ -103,6 +105,7 @@ class UnkTagger(SequenceTagger):
                          bf, self.tag_dictionary.get_item_for_index(bf),
                          c, self.tag_dictionary.get_item_for_index(c)))
         ##################
+        '''
 
         for i in range(feats.shape[1]):
             emit_score = feats[:, i, :]
@@ -117,6 +120,7 @@ class UnkTagger(SequenceTagger):
             tag_var = tag_var - \
                       max_tag_var[:, :, None].repeat(1, 1, transitions.shape[2])
 
+            '''
             #for debug
             if i < 3:
                 print('\n{}th torch.exp(tag_var[0])*masks[0] {}:{} -> {}:{}'.format(
@@ -128,15 +132,18 @@ class UnkTagger(SequenceTagger):
                              bf, self.tag_dictionary.get_item_for_index(bf),
                              c, self.tag_dictionary.get_item_for_index(c)))
             ##################
+            '''
 
             result = (torch.sum(torch.exp(tag_var)*masks[:,i], dim=2)) + self.e
 
+            '''
             for i in range(result.shape[0]):
                 if (result[i] == 0).max():
                     print(i)
                     print(masks[i])
 
             assert not (result == 0).max()
+            '''
 
             agg_ = torch.log(torch.sum(torch.exp(tag_var)*masks[:,i], dim=2) + self.e)
 
@@ -159,9 +166,12 @@ class UnkTagger(SequenceTagger):
         ##################
         '''
 
+        '''
         for i in range(terminal_var.shape[0]):
             result = torch.sum(torch.exp(terminal_var[i])) + self.e
             assert not (result == 0).max()
+        '''
+
         alpha = torch.stack([
               torch.log(torch.sum(torch.exp(terminal_var[i])) + self.e)\
               if forward_tags[i, lens_[i]] == self.unk_tag\
