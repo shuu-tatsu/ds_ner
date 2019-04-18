@@ -1,3 +1,8 @@
+'''
+limited版に編集してある
+'''
+
+
 class IdCreater():
 
     def __init__(self, target_file, read_file, file_type):
@@ -58,21 +63,23 @@ class AnnoCreater():
                 # タイトルは除外
                 if title_or_abst_tag == 'A':
                     #written_str = abst_id_str + '\t' + ne_name + '\t' + s_index + '\t' + e_index + '\t' + ne_type
-                    written_str = abst_id_str + '\t' + ne_name + '\t' + s_index + '\t' + e_index + '\t' + 'CHEMICAL\n'
-                    w.write(written_str)
+                    if ne_type.strip() in ['SYSTEMATIC', 'FAMILY', 'TRIVIAL']:
+                        written_str = abst_id_str + '\t' + ne_name + '\t' + s_index + '\t' + e_index + '\t' + 'CHEMICAL\n'
+                        w.write(written_str)
 
 
 
 def main():
-    TARGET_FILE = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/'
+    TARGET_FILE = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/limited_type_data/'
     make_id_corpus = True
     if make_id_corpus:
         TOY_FILE = TARGET_FILE + 'orig/toy.abstracts.txt' 
         TRAIN_FILE = TARGET_FILE + 'orig/training.abstracts.txt' 
         DEV_FILE = TARGET_FILE + 'orig/development.abstracts.txt'
         EVAL_FILE = TARGET_FILE + 'orig/evaluation.abstracts.txt'
-        #id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'toy')
-        #id_toy_creater.creat_file()
+
+        id_toy_creater = IdCreater(TARGET_FILE, TOY_FILE, 'toy')
+        id_toy_creater.creat_file()
 
         id_toy_creater = IdCreater(TARGET_FILE, TRAIN_FILE, 'train')
         id_toy_creater.creat_file()
@@ -88,8 +95,9 @@ def main():
         TRAIN_FILE = TARGET_FILE + 'orig/training.annotations.txt'
         DEV_FILE = TARGET_FILE + 'orig/development.annotations.txt'
         EVAL_FILE = TARGET_FILE + 'orig/evaluation.annotations.txt'
-        #anno_toy_creater = AnnoCreater(TARGET_FILE, TOY_FILE, 'toy')
-        #anno_toy_creater.creat_file()
+
+        anno_toy_creater = AnnoCreater(TARGET_FILE, TOY_FILE, 'toy')
+        anno_toy_creater.creat_file()
 
         anno_train_creater = AnnoCreater(TARGET_FILE, TRAIN_FILE, 'train')
         anno_train_creater.creat_file()

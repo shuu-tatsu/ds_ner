@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+'''
+limited版に編集してある
+'''
+
 from tqdm import tqdm
 import sys
 import re
@@ -119,9 +123,9 @@ def write_file(w, token_list):
 if __name__ == '__main__':
     args = sys.argv
 
-    id_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/id_data/'
-    id_anno_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/anno_data/'
-    conllform_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/conllform/'
+    id_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/limited_type_data/id_data/'
+    id_anno_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/limited_type_data/anno_data/'
+    conllform_file_path = '/cl/work/shusuke-t/ds_ner/orig_data/chemdner/data/limited_type_data/conllform/'
 
     if args[1] == 'toy':
         ne_sent_only = False
